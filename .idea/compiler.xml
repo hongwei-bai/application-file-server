@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="homepage-auth-service" />
+        <module name="application-service-fileupload" />
+        <module name="mike-demo-springboot" />
+        <module name="demo-maven-springboot" />
+        <module name="application-file-server" />
+        <module name="mavenspringbootdemo" />
+        <module name="application-service-authentication" />
+        <module name="homepage-application-service" />
+        <module name="application-service-auth" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="application-file-server" options="-parameters" />
+      <module name="application-service-auth" options="-parameters" />
+      <module name="application-service-authentication" options="-parameters" />
+      <module name="application-service-fileupload" options="-parameters" />
+      <module name="demo-maven-springboot" options="-parameters" />
+      <module name="homepage-application-service" options="-parameters" />
+      <module name="homepage-auth-service" options="-parameters" />
+      <module name="mavenspringbootdemo" options="-parameters" />
+      <module name="mike-demo-springboot" options="-parameters" />
+    </option>
+  </component>
+</project>
