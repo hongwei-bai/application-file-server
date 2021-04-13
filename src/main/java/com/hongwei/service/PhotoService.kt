@@ -24,9 +24,6 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.File
-import java.math.BigInteger
-import java.security.MessageDigest
-import java.util.*
 
 @Service
 class PhotoService {
@@ -34,6 +31,9 @@ class PhotoService {
 
     @Autowired
     private lateinit var appDataConfigurations: AppDataConfigurations
+
+    @Autowired
+    private lateinit var photoImageHashing: PhotoImageHashing
 
     fun getAlbumList(photoPrivilege: PhotoPrivilege): AlbumResponse {
         if (photoPrivilege.all != true && photoPrivilege.byAlbum.isNullOrEmpty()) {
@@ -82,25 +82,11 @@ class PhotoService {
                 .replace(PLACEHOLDER_ALBUM, folderName)
                 .replace(PLACEHOLDER_FILENAME, fileName)
         val expires = System.currentTimeMillis() + IMAGE_EXPIRES_IN_HOURS * MILLIS_PER_HOUR
-        val hash = generateSecurePathHash(expires, url, appDataConfigurations.imageSecret)
+        val hash = photoImageHashing.generateSecurePathHash(expires, url, appDataConfigurations.imageSecret)
         return IMAGE_FULL_URL.replace(PLACEHOLDER_DOMAIN, appDataConfigurations.imagesDomain)
                 .replace(PLACEHOLDER_URL, url)
                 .replace(PLACEHOLDER_EXPIRES, expires.toString())
                 .replace(PLACEHOLDER_HASH, hash)
-    }
-
-    private fun generateSecurePathHash(expires: Long, url: String, secret: String): String {
-        val input = "$expires$url $secret"
-        val hash = md5(input)
-        val base64String = Base64.getEncoder().encodeToString(hash.toByteArray())
-        return base64String.replace("/=/g", "")
-                .replace("/+/g", "-")
-                .replace("///g", "_")
-    }
-
-    private fun md5(input: String): String {
-        val md = MessageDigest.getInstance("MD5")
-        return BigInteger(1, md.digest(input.toByteArray())).toString(16).padStart(32, '0')
     }
 
     private fun isSupportImageFormat(fileName: String): Boolean =
