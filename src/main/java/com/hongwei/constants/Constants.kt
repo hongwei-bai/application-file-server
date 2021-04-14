@@ -26,5 +26,7 @@ object Constants {
                 "?expires=$PLACEHOLDER_EXPIRES&hash=$PLACEHOLDER_HASH"
         const val IMAGE_EXPIRES_IN_HOURS = 24
         val SUPPORT_IMAGE_FORMATS = listOf("jpg", "jpeg", "png", "webp", "gif")
+
+        const val COVER_PATH_RULE = "cover_$PLACEHOLDER_ALBUM.jpg"
     }
 }

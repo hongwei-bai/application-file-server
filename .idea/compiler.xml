@@ -7,13 +7,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="homepage-auth-service" />
+        <module name="file-server-application" />
         <module name="application-service-fileupload" />
         <module name="mike-demo-springboot" />
         <module name="demo-maven-springboot" />
         <module name="application-file-server" />
-        <module name="application-service-authentication" />
         <module name="mavenspringbootdemo" />
-        <module name="file-server-application" />
+        <module name="application-service-authentication" />
         <module name="homepage-application-service" />
         <module name="application-service-auth" />
       </profile>
