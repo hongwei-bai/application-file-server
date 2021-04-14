@@ -1,6 +1,7 @@
 package com.hongwei.service
 
 import com.hongwei.constants.AppDataConfigurations
+import com.hongwei.constants.Constants.Photo.COVER_PATH_RULE
 import com.hongwei.constants.Constants.Photo.IMAGE_EXPIRES_IN_HOURS
 import com.hongwei.constants.Constants.Photo.IMAGE_FULL_URL
 import com.hongwei.constants.Constants.Photo.IMAGE_URL
@@ -49,6 +50,12 @@ class PhotoService {
             }.forEach {
                 if (photoPrivilege.all == true || photoPrivilege.byAlbum?.contains(it.name) == true) {
                     albums.add(it.name)
+                    val cover = File(root, COVER_PATH_RULE.replace(PLACEHOLDER_ALBUM, it.name))
+                    if (cover.exists() && cover.isFile) {
+                        thumbnails.add(getEncodedFullUrl("", cover.name))
+                    } else {
+                        thumbnails.add("")
+                    }
                 }
             }
         }
@@ -69,18 +76,19 @@ class PhotoService {
             files.forEach {
                 if (it.isFile && isSupportImageFormat(it.name)) {
                     images.add(getEncodedFullUrl(folderName, it.name, res))
-                    thumbnails.add(getEncodedFullUrl(folderName, it.name, PhotoResolution.Thumbnail))
+                    thumbnails.add(getEncodedFullUrl(folderName, it.name))
                 }
             }
         }
         return PhotoResponse(folderName, res.name, images, thumbnails)
     }
 
-    private fun getEncodedFullUrl(folderName: String, fileName: String, res: PhotoResolution): String {
+    private fun getEncodedFullUrl(folderName: String, fileName: String, res: PhotoResolution = PhotoResolution.Thumbnail): String {
         val url = IMAGE_URL.replace(PLACEHOLDER_LOCATION, appDataConfigurations.imageLocation)
                 .replace(PLACEHOLDER_WIDTH, res.width.toString())
                 .replace(PLACEHOLDER_ALBUM, folderName)
                 .replace(PLACEHOLDER_FILENAME, fileName)
+                .replace("//", "/")
         val expires = System.currentTimeMillis() + IMAGE_EXPIRES_IN_HOURS * MILLIS_PER_HOUR
         val hash = photoImageHashing.generateSecurePathHash(expires, url, appDataConfigurations.imageSecret)
         return IMAGE_FULL_URL.replace(PLACEHOLDER_DOMAIN, appDataConfigurations.imagesDomain)
