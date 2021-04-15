@@ -2,6 +2,8 @@ package com.hongwei.security.filters
 
 import com.hongwei.constants.AppTokenExpiredException
 import com.hongwei.constants.SecurityConfigurations
+import com.hongwei.constants.Unauthorized
+import com.hongwei.security.model.SubCodeResponseFactory.genericUnauthorizedError
 import com.hongwei.security.model.SubCodeResponseFactory.noPermission
 import com.hongwei.security.model.SubCodeResponseFactory.tokenExpired
 import com.hongwei.security.service.AuthorisationService
@@ -61,6 +63,8 @@ class JwtRequestFilter : OncePerRequestFilter() {
                 }
             } catch (e: AppTokenExpiredException) {
                 response.writer.write(tokenExpired())
+            } catch (e: Unauthorized) {
+                response.writer.write(genericUnauthorizedError())
             }
         }
 

@@ -42,6 +42,11 @@ class AuthorisationService {
             } else null
         } catch (e: Unauthorized) {
             throw e
+        } catch (e: HttpClientErrorException) {
+            if (e.statusCode.value() == HttpStatus.UNAUTHORIZED.value()) {
+                throw Unauthorized
+            }
+            throw e
         } catch (e: Exception) {
             if (e.message?.contains("JWT expired") == true) {
                 throw AppTokenExpiredException
