@@ -42,7 +42,7 @@ class AuthorisationCache {
                 role = this.role!!,
                 preferenceJson = this.preferenceJson ?: "",
                 privilegeJson = this.privilegeJson ?: "",
-                uploadExercise = privilege.entries.contains("uploadexercise"),
+                uploadExercise = privilege.entries.contains("uploadExercise"),
                 photoEntry = privilege.entries.contains("photo"),
                 photoBrowseAll = privilege.photo?.all ?: false,
                 photoBrowseByAlbum = privilege.photo?.byAlbum ?: emptyList()

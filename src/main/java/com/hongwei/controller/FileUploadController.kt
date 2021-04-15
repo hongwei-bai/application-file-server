@@ -27,13 +27,13 @@ class FileUploadController {
     @PostMapping("/upload.do")
     @ResponseBody
     fun singleFileUpload(@RequestParam("file") file: MultipartFile,
-                         @RequestParam("path") path: String? = "",
+                         @RequestParam("path") path: String?,
                          redirectAttributes: RedirectAttributes): ResponseEntity<*> {
         if (file.isEmpty) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload")
             return ResponseEntity.ok("redirect:uploadStatus")
         }
-        val pathRoot = appDataConfigurations.uploadExercisePath + path
+        val pathRoot = appDataConfigurations.uploadExercisePath + (path ?: "")
         try { // Get the file and save it somewhere
             val bytes = file.bytes
             val pathString = pathRoot + File.separator + file.originalFilename
@@ -49,7 +49,7 @@ class FileUploadController {
         }
         fileCompressService.decompressTar(pathRoot, file.originalFilename)
 
-        return ResponseEntity.ok("redirect:uploadStatus")
+        return ResponseEntity.ok("redirect:finished")
     }
 
     @GetMapping("/uploadStatus")
