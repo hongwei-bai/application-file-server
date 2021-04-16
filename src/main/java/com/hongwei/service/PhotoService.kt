@@ -1,7 +1,8 @@
 package com.hongwei.service
 
 import com.hongwei.constants.AppDataConfigurations
-import com.hongwei.constants.Constants.Photo.COVER_PATH_RULE
+import com.hongwei.constants.Constants.Photo.APP_IMAGE_FULL_URL
+import com.hongwei.constants.Constants.Photo.COVER_FILENAME
 import com.hongwei.constants.Constants.Photo.IMAGE_EXPIRES_IN_HOURS
 import com.hongwei.constants.Constants.Photo.IMAGE_FULL_URL
 import com.hongwei.constants.Constants.Photo.IMAGE_URL
@@ -16,9 +17,8 @@ import com.hongwei.constants.Constants.Photo.PLACEHOLDER_WIDTH
 import com.hongwei.constants.Constants.Photo.SUPPORT_IMAGE_FORMATS
 import com.hongwei.constants.Constants.TimeUnit.MILLIS_PER_HOUR
 import com.hongwei.constants.Unauthorized
-import com.hongwei.model.AlbumResponse
-import com.hongwei.model.PhotoResolution
-import com.hongwei.model.PhotoResponse
+import com.hongwei.model.*
+import com.hongwei.model.jpa.AlbumRepository
 import com.hongwei.model.privilege.PhotoPrivilege
 import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
@@ -36,30 +36,44 @@ class PhotoService {
     @Autowired
     private lateinit var photoImageHashing: PhotoImageHashing
 
+    @Autowired
+    private lateinit var albumRepository: AlbumRepository
+
     fun getAlbumList(photoPrivilege: PhotoPrivilege): AlbumResponse {
         if (photoPrivilege.all != true && photoPrivilege.byAlbum.isNullOrEmpty()) {
             throw Unauthorized
         }
 
-        val albums = mutableListOf<String>()
-        val thumbnails = mutableListOf<String>()
+        val albums = mutableListOf<AlbumForApi>()
         val root = File(appDataConfigurations.imagesRoot)
+        val coverRoot = File(appDataConfigurations.appImagesRoot)
         if (root.exists() && root.isDirectory) {
             root.listFiles().filter {
                 it.exists() && it.isDirectory
             }.forEach {
                 if (photoPrivilege.all == true || photoPrivilege.byAlbum?.contains(it.name) == true) {
-                    albums.add(it.name)
-                    val cover = File(root, COVER_PATH_RULE.replace(PLACEHOLDER_ALBUM, it.name))
+                    val albumDb = albumRepository.findAlbumByPath(it.name)
+                    val coverFileName = COVER_FILENAME.replace(PLACEHOLDER_ALBUM, it.name)
+                    val cover = File(coverRoot, coverFileName)
+                    var thumbnailFullUrl = ""
                     if (cover.exists() && cover.isFile) {
-                        thumbnails.add(getEncodedFullUrl("", cover.name))
-                    } else {
-                        thumbnails.add("")
+                        thumbnailFullUrl = APP_IMAGE_FULL_URL
+                                .replace(PLACEHOLDER_DOMAIN, appDataConfigurations.imagesDomain)
+                                .replace(PLACEHOLDER_LOCATION, appDataConfigurations.appImageLocation)
+                                .replace(PLACEHOLDER_WIDTH, PhotoResolution.Thumbnail.width.toString())
+                                .replace(PLACEHOLDER_FILENAME, coverFileName)
                     }
+                    albums.add(AlbumForApi(
+                            name = albumDb?.name ?: it.name,
+                            nameByPath = it.name,
+                            description = albumDb?.description ?: "",
+                            owner = albumDb?.owner ?: "",
+                            thumbnail = thumbnailFullUrl
+                    ))
                 }
             }
         }
-        return AlbumResponse(albums, thumbnails)
+        return AlbumResponse(albums)
     }
 
     fun getPhotoListByFolder(folderName: String, resolution: String, photoPrivilege: PhotoPrivilege): PhotoResponse {
@@ -69,18 +83,19 @@ class PhotoService {
 
         val res = PhotoResolution.parseFromString(resolution)
         val root = File(appDataConfigurations.imagesRoot + folderName)
-        val images = mutableListOf<String>()
-        val thumbnails = mutableListOf<String>()
+        val images = mutableListOf<Photo>()
         if (root.exists() && root.isDirectory) {
             val files = root.listFiles()
             files.forEach {
                 if (it.isFile && isSupportImageFormat(it.name)) {
-                    images.add(getEncodedFullUrl(folderName, it.name, res))
-                    thumbnails.add(getEncodedFullUrl(folderName, it.name))
+                    images.add(Photo(
+                            original = getEncodedFullUrl(folderName, it.name, res),
+                            thumbnail = getEncodedFullUrl(folderName, it.name)
+                    ))
                 }
             }
         }
-        return PhotoResponse(folderName, res.name, images, thumbnails)
+        return PhotoResponse(folderName, res.name, images)
     }
 
     private fun getEncodedFullUrl(folderName: String, fileName: String, res: PhotoResolution = PhotoResolution.Thumbnail): String {
