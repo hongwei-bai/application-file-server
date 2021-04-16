@@ -25,11 +25,13 @@ jwt.authorizationEndpoint=/authenticate/authorise.do
 
 appdata.imageSecret=secret
 appdata.imageLocation=media/
+appdata.appImageLocation=resize/
 
 #Debug
 jwt.corsAllowDomain=http://localhost:3944
 jwt.authorizationDomain=http://localhost:8082
 appdata.uploadExercisePath=D:/test/upload/
+appdata.appImagesRoot=D:/test/appImg/photo/covers/
 appdata.imagesRoot=D:/test/img/
 appdata.imagesDomain=https://{domain name}
 
@@ -37,6 +39,7 @@ appdata.imagesDomain=https://{domain name}
 #jwt.corsAllowDomain=http://localhost:3944
 #jwt.authorizationDomain=http://localhost:8080/application-service-authentication
 #appdata.uploadExercisePath=D:/test/upload/
+#appdata.appImagesRoot=D:/test/appImg/photo/covers/
 #appdata.imagesRoot=D:/test/img/
 #appdata.imagesDomain=https://{domain name}
 
@@ -44,5 +47,6 @@ appdata.imagesDomain=https://{domain name}
 #jwt.corsAllowDomain=https://{domain name}
 #jwt.authorizationDomain=https://{domain name}/application-service-authentication
 #appdata.uploadExercisePath=/usr/share/nginx/html/summer/
+#appdata.appImagesRoot=/usr/share/nginx/html/appImg/photo/covers/
 #appdata.imagesRoot=/usr/share/nginx/html/img/
 #appdata.imagesDomain=https://{domain name}

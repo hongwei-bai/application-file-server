@@ -11,4 +11,6 @@ open class AppDataConfigurations {
     lateinit var imagesDomain: String
     lateinit var imageLocation: String
     lateinit var imageSecret: String
+    lateinit var appImagesRoot: String
+    lateinit var appImageLocation: String
 }

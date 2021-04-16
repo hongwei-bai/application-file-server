@@ -20,13 +20,13 @@ object Constants {
         const val PLACEHOLDER_HASH = "{hash}"
         const val PLACEHOLDER_URL = "{url}"
 
-        const val COVER_FILE_NAME = "cover.jpg"
         val IMAGE_URL = "/$PLACEHOLDER_LOCATION$PLACEHOLDER_WIDTH/$PLACEHOLDER_ALBUM/$PLACEHOLDER_FILENAME"
         val IMAGE_FULL_URL = "$PLACEHOLDER_DOMAIN$PLACEHOLDER_URL" +
                 "?expires=$PLACEHOLDER_EXPIRES&hash=$PLACEHOLDER_HASH"
         const val IMAGE_EXPIRES_IN_HOURS = 24
         val SUPPORT_IMAGE_FORMATS = listOf("jpg", "jpeg", "png", "webp", "gif")
 
-        const val COVER_PATH_RULE = "cover_$PLACEHOLDER_ALBUM.jpg"
+        const val COVER_FILENAME = "$PLACEHOLDER_ALBUM.jpg"
+        val APP_IMAGE_FULL_URL = "$PLACEHOLDER_DOMAIN/$PLACEHOLDER_LOCATION$PLACEHOLDER_WIDTH/photo/covers/$PLACEHOLDER_FILENAME"
     }
 }
