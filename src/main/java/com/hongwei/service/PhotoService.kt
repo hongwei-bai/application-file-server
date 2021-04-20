@@ -3,7 +3,6 @@ package com.hongwei.service
 import com.hongwei.constants.AppDataConfigurations
 import com.hongwei.constants.Constants.Photo.APP_IMAGE_FULL_URL
 import com.hongwei.constants.Constants.Photo.COVER_FILENAME
-import com.hongwei.constants.Constants.Photo.IMAGE_EXPIRES_IN_HOURS
 import com.hongwei.constants.Constants.Photo.IMAGE_FULL_URL
 import com.hongwei.constants.Constants.Photo.IMAGE_URL
 import com.hongwei.constants.Constants.Photo.PLACEHOLDER_ALBUM
@@ -15,7 +14,6 @@ import com.hongwei.constants.Constants.Photo.PLACEHOLDER_LOCATION
 import com.hongwei.constants.Constants.Photo.PLACEHOLDER_URL
 import com.hongwei.constants.Constants.Photo.PLACEHOLDER_WIDTH
 import com.hongwei.constants.Constants.Photo.SUPPORT_IMAGE_FORMATS
-import com.hongwei.constants.Constants.TimeUnit.MILLIS_PER_HOUR
 import com.hongwei.constants.Unauthorized
 import com.hongwei.model.*
 import com.hongwei.model.jpa.AlbumRepository
@@ -27,8 +25,6 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.File
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @Service
 class PhotoService {
