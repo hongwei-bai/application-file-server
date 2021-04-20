@@ -73,6 +73,7 @@ class AuthorisationService {
         }
 
         if ((photoEntry) && normalisedUri.startsWith("/photo/", true)) {
+            request.setAttribute(Constants.Security.REQUEST_ATTRIBUTE_ACCOUNT_EXPIRES, validatedUntil)
             request.setAttribute(Constants.Security.REQUEST_ATTRIBUTE_PHOTO_BROWSE_ALL, photoBrowseAll)
             request.setAttribute(Constants.Security.REQUEST_ATTRIBUTE_PHOTO_ALBUMS, photoBrowseByAlbum)
             return true

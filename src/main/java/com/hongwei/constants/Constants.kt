@@ -2,12 +2,15 @@ package com.hongwei.constants
 
 object Constants {
     object Security {
+        const val REQUEST_ATTRIBUTE_ACCOUNT_EXPIRES = "account_expires"
         const val REQUEST_ATTRIBUTE_PHOTO_BROWSE_ALL = "photo_browse_all"
         const val REQUEST_ATTRIBUTE_PHOTO_ALBUMS = "photo_browse_by_album"
     }
 
     object TimeUnit {
         const val MILLIS_PER_HOUR = 3600L * 1000
+        const val MILLIS_PER_WEEK = MILLIS_PER_HOUR * 24 * 7
+        const val MILLIS_PER_MONTH = MILLIS_PER_HOUR * 24 * 30
     }
 
     object Photo {

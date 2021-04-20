@@ -20,11 +20,15 @@ import com.hongwei.constants.Unauthorized
 import com.hongwei.model.*
 import com.hongwei.model.jpa.AlbumRepository
 import com.hongwei.model.privilege.PhotoPrivilege
+import com.hongwei.util.DateUtil
+import com.hongwei.util.UrlEncoderUtil.encodeUrl
 import org.apache.log4j.LogManager
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.File
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Service
 class PhotoService {
@@ -61,7 +65,7 @@ class PhotoService {
                                 .replace(PLACEHOLDER_DOMAIN, appDataConfigurations.imagesDomain)
                                 .replace(PLACEHOLDER_LOCATION, appDataConfigurations.appImageLocation)
                                 .replace(PLACEHOLDER_WIDTH, PhotoResolution.Thumbnail.width.toString())
-                                .replace(PLACEHOLDER_FILENAME, coverFileName)
+                                .replace(PLACEHOLDER_FILENAME, encodeUrl(coverFileName))
                     }
                     albums.add(AlbumForApi(
                             name = albumDb?.name ?: it.name,
@@ -89,8 +93,8 @@ class PhotoService {
             files.forEach {
                 if (it.isFile && isSupportImageFormat(it.name)) {
                     images.add(Photo(
-                            original = getEncodedFullUrl(folderName, it.name, res),
-                            thumbnail = getEncodedFullUrl(folderName, it.name)
+                            original = getEncodedFullUrl(folderName, it.name, res, photoPrivilege.accountExpires),
+                            thumbnail = getEncodedFullUrl(folderName, it.name, PhotoResolution.Thumbnail, photoPrivilege.accountExpires)
                     ))
                 }
             }
@@ -98,18 +102,31 @@ class PhotoService {
         return PhotoResponse(folderName, res.name, images)
     }
 
-    private fun getEncodedFullUrl(folderName: String, fileName: String, res: PhotoResolution = PhotoResolution.Thumbnail): String {
+    private fun getEncodedFullUrl(folderName: String, fileName: String, res: PhotoResolution = PhotoResolution.Thumbnail,
+                                  accountExpires: Long): String {
         val url = IMAGE_URL.replace(PLACEHOLDER_LOCATION, appDataConfigurations.imageLocation)
                 .replace(PLACEHOLDER_WIDTH, res.width.toString())
                 .replace(PLACEHOLDER_ALBUM, folderName)
                 .replace(PLACEHOLDER_FILENAME, fileName)
                 .replace("//", "/")
-        val expires = System.currentTimeMillis() + IMAGE_EXPIRES_IN_HOURS * MILLIS_PER_HOUR
+        val encodedUrl = IMAGE_URL.replace(PLACEHOLDER_LOCATION, appDataConfigurations.imageLocation)
+                .replace(PLACEHOLDER_WIDTH, res.width.toString())
+                .replace(PLACEHOLDER_ALBUM, encodeUrl(folderName))
+                .replace(PLACEHOLDER_FILENAME, encodeUrl(fileName))
+                .replace("//", "/")
+        val expires = getLatestTimeStamp(accountExpires, DateUtil.getFirstDayOfNextMonth())
         val hash = photoImageHashing.generateSecurePathHash(expires, url, appDataConfigurations.imageSecret)
         return IMAGE_FULL_URL.replace(PLACEHOLDER_DOMAIN, appDataConfigurations.imagesDomain)
-                .replace(PLACEHOLDER_URL, url)
+                .replace(PLACEHOLDER_URL, encodedUrl)
                 .replace(PLACEHOLDER_EXPIRES, expires.toString())
                 .replace(PLACEHOLDER_HASH, hash)
+    }
+
+    private fun getLatestTimeStamp(tsCouldBeInvalid: Long, ts: Long): Long {
+        if (tsCouldBeInvalid > 0) {
+            return tsCouldBeInvalid.coerceAtMost(ts)
+        }
+        return ts
     }
 
     private fun isSupportImageFormat(fileName: String): Boolean =
