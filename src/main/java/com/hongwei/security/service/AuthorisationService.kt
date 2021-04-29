@@ -28,7 +28,9 @@ class AuthorisationService {
 
     @Throws(HttpClientErrorException::class, InternalServerError::class)
     fun authorise(jwt: String, method: String, requestUri: String, request: HttpServletRequest): Boolean {
-        val authoriseObject: AuthoriseObject? = cache.getFromCache(jwt) ?: try {
+        val authoriseObject: AuthoriseObject? =
+//                cache.getFromCache(jwt) ?:
+                try {
             val uri = "${securityConfigurations.authorizationDomain}${securityConfigurations.authorizationEndpoint}"
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON;
@@ -38,7 +40,8 @@ class AuthorisationService {
                     ), AuthorisationResponse::class.java)
 
             if (response.statusCode.is2xxSuccessful && response.body?.validated == true) {
-                cache.update(jwt, response.body!!)
+//                cache.update(jwt, response.body!!)
+                cache.bypassCache(jwt, response.body!!)
             } else null
         } catch (e: Unauthorized) {
             throw e

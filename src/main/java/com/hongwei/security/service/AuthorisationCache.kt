@@ -12,6 +12,10 @@ class AuthorisationCache {
     private val jwtToObjWeakHashMap = WeakHashMap<String, AuthoriseObject>()
     private val jwtToUserNameWeakHashMap = WeakHashMap<String, String>()
 
+    fun bypassCache(jwt: String, response: AuthorisationResponse): AuthoriseObject? {
+        return response.mapTo()
+    }
+
     fun update(jwt: String, response: AuthorisationResponse): AuthoriseObject? {
         if (jwtToObjWeakHashMap.containsKey(jwt)) {
             return jwtToObjWeakHashMap[jwt]
