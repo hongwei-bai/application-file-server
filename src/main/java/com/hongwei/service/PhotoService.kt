@@ -56,6 +56,9 @@ class PhotoService {
                     val coverFileName = COVER_FILENAME.replace(PLACEHOLDER_ALBUM, it.name)
                     val cover = File(coverRoot, coverFileName)
                     var thumbnailFullUrl = ""
+                    var photoCount = it.listFiles()?.count { photo ->
+                        photo.isFile && isSupportImageFormat(photo.name)
+                    } ?: 0
                     if (cover.exists() && cover.isFile) {
                         thumbnailFullUrl = APP_IMAGE_FULL_URL
                                 .replace(PLACEHOLDER_DOMAIN, appDataConfigurations.imagesDomain)
@@ -66,13 +69,16 @@ class PhotoService {
                     albums.add(AlbumForApi(
                             name = albumDb?.name ?: it.name,
                             nameByPath = it.name,
+                            time = it.lastModified(),
                             description = albumDb?.description ?: "",
                             owner = albumDb?.owner ?: "",
-                            thumbnail = thumbnailFullUrl
+                            thumbnail = thumbnailFullUrl,
+                            numberOfPhotos = photoCount
                     ))
                 }
             }
         }
+        albums.sortByDescending { it.time }
         return AlbumResponse(albums)
     }
 
